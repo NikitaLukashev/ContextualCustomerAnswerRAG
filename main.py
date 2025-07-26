@@ -1,3 +1,4 @@
+# Initial FastAPI setup - Project foundation established
 from fastapi import FastAPI
 import uvicorn
 from controller import RAGHandler
