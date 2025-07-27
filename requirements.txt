@@ -1,3 +1,4 @@
+# Core dependencies - Essential packages for RAG system
 chromadb==1.0.10
 sentence-transformers==2.2.2
 huggingface-hub==0.19.4
