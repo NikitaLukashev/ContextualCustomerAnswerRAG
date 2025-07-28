@@ -1,3 +1,4 @@
+# Basic schemas - Pydantic models for API validation
 """
 Pydantic models for the RAG system API
 """
