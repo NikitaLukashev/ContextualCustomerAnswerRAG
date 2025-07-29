@@ -1,3 +1,4 @@
+# Basic RAG system - Core retrieval architecture
 """
 RAG system implementation using ChromaDB and Mistral LLM
 """
