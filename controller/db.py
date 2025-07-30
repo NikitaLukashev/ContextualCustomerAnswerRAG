@@ -1,3 +1,4 @@
+# ChromaDB integration - Vector database connection
 """
 Database connection module for ChromaDB
 """
