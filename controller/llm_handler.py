@@ -1,3 +1,4 @@
+# Mistral AI integration - LLM and embedding services
 """
 Mistral LLM integration for the RAG system
 """
