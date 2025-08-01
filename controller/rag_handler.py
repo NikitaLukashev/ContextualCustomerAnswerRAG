@@ -1,4 +1,4 @@
-# Basic RAG system - Core retrieval architecture
+# Text processing - Document chunking and preprocessing
 """
 RAG system implementation using ChromaDB and Mistral LLM
 """
