@@ -1,3 +1,4 @@
+# API routes - RESTful endpoints for search operations
 """
 API routes for the RAG system
 """
