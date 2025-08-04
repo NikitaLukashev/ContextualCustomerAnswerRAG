@@ -1,3 +1,4 @@
+# Docker Compose - Local development environment
 services:
   chromadb:
     image: chromadb/chroma:latest
