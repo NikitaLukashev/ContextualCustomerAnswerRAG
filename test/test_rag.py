@@ -1,3 +1,4 @@
+# Test suite - Comprehensive testing framework
 #!/usr/bin/env python3
 """
 Unit tests for RAG system endpoints using pytest
