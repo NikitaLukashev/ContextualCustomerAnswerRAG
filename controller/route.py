@@ -1,4 +1,4 @@
-# API routes - RESTful endpoints for search operations
+# Health checks - System monitoring and status endpoints
 """
 API routes for the RAG system
 """
