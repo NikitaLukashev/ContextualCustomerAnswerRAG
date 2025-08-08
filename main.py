@@ -1,4 +1,4 @@
-# Initial FastAPI setup - Project foundation established
+# Configuration management - Environment variable support
 from fastapi import FastAPI
 import uvicorn
 from controller import RAGHandler
