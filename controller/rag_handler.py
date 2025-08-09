@@ -1,4 +1,4 @@
-# Text processing - Document chunking and preprocessing
+# Error handling - Robust error management and logging
 """
 RAG system implementation using ChromaDB and Mistral LLM
 """
