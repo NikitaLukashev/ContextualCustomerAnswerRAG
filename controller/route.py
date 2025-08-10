@@ -1,4 +1,4 @@
-# Health checks - System monitoring and status endpoints
+# Performance monitoring - Metrics and performance tracking
 """
 API routes for the RAG system
 """
