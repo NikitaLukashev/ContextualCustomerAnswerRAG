@@ -1,4 +1,4 @@
-# Error handling - Robust error management and logging
+# Caching - Performance optimization with result caching
 """
 RAG system implementation using ChromaDB and Mistral LLM
 """
