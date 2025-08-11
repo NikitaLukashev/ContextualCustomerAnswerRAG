@@ -125,7 +125,10 @@ async def get_llm_status():
     
     try:
         status = rag_handler.get_llm_status()
+        print(status)
         return LLMStatus(**status)
+        print('status')
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error retrieving LLM status: {str(e)}")
 

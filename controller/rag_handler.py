@@ -163,6 +163,7 @@ class RAGHandler:
         """
         Get the status of the LLM integration
         """
+        print(self.llm)
         return {
             "llm_available": self.llm is not None,
             "llm_model": "mistral-large-latest" if self.llm else None,

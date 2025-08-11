@@ -6,6 +6,7 @@ data/*
 !data/.gitkeep
 *.html
 *.xml
+test/assets/*
 
 
 

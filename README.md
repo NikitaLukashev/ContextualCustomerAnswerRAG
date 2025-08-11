@@ -4,29 +4,7 @@ A RAG (Retrieval-Augmented Generation) system for providing contextual customer 
 
 ## Description
 
-This project implements a RAG system that can retrieve relevant information from Airbnb listing data and generate contextual answers for customer queries using **Mistral Large LLM**. The system uses:
-
-- **ChromaDB** as the vector database
-- **Sentence Transformers** for embeddings
-- **Mistral Large LLM** for intelligent response generation
-- **FastAPI** for the web API
-- **Docker** for containerization
-
-## Project Structure
-
-```
-ContextualCustomerAnswerRAG/
-├── .gitignore          # Git ignore file
-├── README.md           # Project documentation
-├── requirements.txt    # Python dependencies
-├── Dockerfile          # Docker configuration
-├── docker-compose.yml  # Docker Compose configuration
-├── .dockerignore       # Docker ignore file
-├── main.py             # FastAPI application
-├── rag_system.py       # Core RAG system
-├── airbnblisting.txt   # Airbnb listing data
-└── data/               # Vector database storage
-```
+This project implements a RAG system that can retrieve relevant information from Airbnb listing data and generate contextual answers for customer queries using **Mistral Large LLM**.
 
 ## Features
 
@@ -56,7 +34,7 @@ ContextualCustomerAnswerRAG/
 2. **Set up environment variables:**
    ```bash
    # Copy the environment template
-   cp env_template.txt .env
+   cp .env_template .env
    
    # Edit .env file with your actual Mistral API key
    # MISTRAL_API_KEY=your_actual_api_key_here
@@ -64,12 +42,18 @@ ContextualCustomerAnswerRAG/
 
 3. **Build and run with Docker Compose:**
    ```bash
-   docker-compose up --build
+   docker-compose -f docker-compose.yml up --build
    ```
 
-3. **Access the application:**
+3. **Run test inside Docker Compose:**
+   ```bash
+   docker-compose -f docker-compose.test.yml up --build
+   ```
+
+4. **Access the application:**
    - API: http://localhost:8000
-   - Documentation: http://localhost:8000/docs
+   - **Interactive API Documentation**: http://localhost:8000/docs (Swagger UI)
+   - **ReDoc Documentation**: http://localhost:8000/redoc (Alternative view)
    - Health check: http://localhost:8000/health
 
 ## API Endpoints
@@ -82,8 +66,139 @@ ContextualCustomerAnswerRAG/
 - `POST /search` - Search for relevant documents
 - `POST /search-with-llm` - Search with LLM-powered response generation
 - `GET /llm-status` - Check Mistral LLM integration status
-- `POST /reload` - Reload documents from file
+- `POST /load-documents` - Load documents from file
 - `GET /sample-queries` - Get sample queries for testing
+
+### OpenAPI Specification
+
+The API follows OpenAPI 3.0 specification and provides comprehensive documentation at `/docs` endpoint.
+
+#### Request/Response Models
+
+##### QueryRequest
+```json
+{
+  "query": "string",
+  "n_results": "integer (default: 5, max: 5)"
+}
+```
+
+##### SearchResponse
+```json
+{
+  "query": "string",
+  "results": [
+    {
+      "text": "string",
+      "distance": "number (optional)"
+    }
+  ],
+  "total_results": "integer"
+}
+```
+
+##### LLMSearchResponse
+```json
+{
+  "query": "string",
+  "llm_response": "string",
+  "results": [
+    {
+      "text": "string",
+      "distance": "number (optional)"
+    }
+  ],
+  "error": "string (optional)"
+}
+```
+
+##### CollectionInfo
+```json
+{
+  "collection_name": "string",
+  "document_count": "integer"
+}
+```
+
+##### LLMStatus
+```json
+{
+  "status": "string",
+  "message": "string (optional)"
+}
+```
+
+#### Endpoint Details
+
+##### GET /
+**Description**: Root endpoint providing system overview and available endpoints  
+**Response**: System information, version, and endpoint list  
+**Status Codes**: 200 OK
+
+##### GET /health
+**Description**: Health check endpoint for monitoring and load balancers  
+**Response**: Service health status  
+**Status Codes**: 200 OK
+
+##### GET /info
+**Description**: Retrieve vector database collection information  
+**Response**: Collection name and document count  
+**Status Codes**: 200 OK, 500 Internal Server Error
+
+##### POST /search
+**Description**: Search for relevant documents using semantic similarity  
+**Request Body**: QueryRequest  
+**Response**: SearchResponse with ranked results  
+**Status Codes**: 200 OK, 400 Bad Request, 500 Internal Server Error
+
+##### POST /search-with-llm
+**Description**: Enhanced search with LLM-powered response generation  
+**Request Body**: QueryRequest  
+**Response**: LLMSearchResponse with AI-generated answer  
+**Status Codes**: 200 OK, 400 Bad Request, 500 Internal Server Error
+
+##### GET /llm-status
+**Description**: Check Mistral LLM integration status  
+**Response**: LLM service status and any error messages  
+**Status Codes**: 200 OK, 500 Internal Server Error
+
+##### POST /load-documents
+**Description**: Load and process documents from airbnblisting.txt file  
+**Response**: Success message with document count  
+**Status Codes**: 200 OK, 500 Internal Server Error
+
+##### GET /sample-queries
+**Description**: Get sample queries for testing and demonstration  
+**Response**: List of example queries  
+**Status Codes**: 200 OK
+
+#### Error Handling
+
+The API uses standard HTTP status codes and provides detailed error messages:
+
+- **400 Bad Request**: Invalid input parameters or validation errors
+- **500 Internal Server Error**: Server-side errors with descriptive messages
+- **422 Unprocessable Entity**: Request validation failures (FastAPI automatic)
+
+#### Rate Limiting
+
+Currently no rate limiting is implemented, but the system is designed to handle multiple concurrent requests efficiently.
+
+#### Authentication
+
+No authentication is required for the current endpoints. All endpoints are publicly accessible.
+
+#### OpenAPI Schema
+
+The complete OpenAPI 3.0 specification is available at:
+- **JSON Schema**: http://localhost:8000/openapi.json
+- **YAML Schema**: http://localhost:8000/openapi.yaml
+
+This allows developers to:
+- Generate client SDKs in various programming languages
+- Import the API specification into tools like Postman or Insomnia
+- Validate API requests and responses
+- Generate comprehensive API documentation
 
 ### Search Examples
 
@@ -142,62 +257,6 @@ The system now includes integration with **Mistral Large LLM** for enhanced resp
 3. **LLM Generation**: Mistral Large generates human-like responses based on the context
 4. **Response Delivery**: Both the LLM response and retrieved documents are returned
 
-### Benefits
-
-- **Intelligent Answers**: More natural and contextual responses
-- **Better Understanding**: LLM can synthesize information from multiple documents
-- **User Experience**: More engaging and helpful customer interactions
-- **Fallback Support**: Works even if LLM is unavailable
-
-### Configuration
-
-The Mistral API key is configured via environment variable in a `.env` file:
-
-1. **Create a `.env` file** in the project root:
-   ```bash
-   cp env_template.txt .env
-   ```
-
-2. **Update the `.env` file** with your actual Mistral API key:
-   ```bash
-   MISTRAL_API_KEY=your_actual_api_key_here
-   ```
-
-3. **The `.env` file is automatically loaded** by Docker Compose and the API key will be available to your application.
-
-**Note**: Never commit your `.env` file to version control. It's already included in `.gitignore`.
-
-## Local Development
-
-### Prerequisites
-
-- Python 3.11+
-- pip
-
-### Setup
-
-1. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-2. **Run the application:**
-   ```bash
-   python main.py
-   ```
-
-3. **Access the application:**
-   - API: http://localhost:8000
-   - Documentation: http://localhost:8000/docs
-
-## Vector Database
-
-The system uses ChromaDB as the vector database with the following features:
-
-- **Persistent Storage**: Data is stored in the `./data` directory
-- **Cosine Similarity**: Uses cosine similarity for vector search
-- **Automatic Embeddings**: Sentence transformers for text embeddings
-- **Metadata Support**: Tracks document source and chunk information
 
 ## Data Processing
 
@@ -207,21 +266,6 @@ The system automatically processes the `airbnblisting.txt` file:
 2. **Chunking**: Splits text into overlapping chunks (500 chars with 50 char overlap)
 3. **Embedding**: Generates embeddings using sentence transformers
 4. **Storage**: Stores in ChromaDB with metadata
-
-## Configuration
-
-### Environment Variables
-
-- `CHROMA_DB_IMPL`: ChromaDB implementation (default: duckdb+parquet)
-- `PERSIST_DIRECTORY`: Vector database storage directory (default: ./data)
-
-### Docker Configuration
-
-The Docker setup includes:
-- Volume mounting for persistent data
-- Port mapping (8000:8000)
-- Automatic restart policy
-- Hot reload for development
 
 ## Development
 
@@ -237,20 +281,6 @@ The Docker setup includes:
 - Update `main.py` for API endpoints
 - Adjust chunking parameters in `RAGHandler.chunk_text()`
 
-## Troubleshooting
-
-### Common Issues
-
-1. **Port already in use**: Change the port in `docker-compose.yml`
-2. **Memory issues**: Increase Docker memory allocation
-3. **Data not loading**: Check if `airbnblisting.txt` exists
-
-### Logs
-
-View Docker logs:
-```bash
-docker-compose logs -f
-```
 
 ## License
 
