@@ -1,0 +1,68 @@
+services:
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: chromadb-test
+    ports:
+      - "8001:8000"
+    volumes:
+      - chromadb_test_data:/chroma/chroma
+    environment:
+      - CHROMA_SERVER_HOST=0.0.0.0
+      - CHROMA_SERVER_HTTP_PORT=8000
+      - CHROMA_SERVER_CORS_ALLOW_ORIGINS=["*"]
+    restart: unless-stopped
+    networks:
+      - rag-test-network
+
+  rag-app:
+    build: .
+    container_name: rag-app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data/airbnblisting.txt:/app/data/airbnblisting.txt
+    environment:
+      - CHROMA_SERVER_HOST=chromadb
+      - CHROMA_SERVER_PORT=8000
+      - CHROMA_SERVER_HTTP_PORT=8000
+      - MISTRAL_API_KEY=${MISTRAL_API_KEY}
+    depends_on:
+      - chromadb
+    restart: unless-stopped
+    networks:
+      - rag-test-network
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --log-level info
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+
+  test-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: test-runner
+    volumes:
+      - ./data/airbnblisting.txt:/app/data/airbnblisting.txt
+    environment:
+      - CHROMA_SERVER_HOST=chromadb
+      - CHROMA_SERVER_PORT=8000
+      - MISTRAL_API_KEY=${MISTRAL_API_KEY}
+      - TEST_BASE_URL=http://rag-app:8000
+      - PYTHONPATH=/app
+    depends_on:
+      rag-app:
+        condition: service_healthy
+    networks:
+      - rag-test-network
+    command: ["sh", "-c", "echo 'Waiting for RAG app to be ready...' && while ! curl -f http://rag-app:8000/health; do sleep 5; done && echo 'RAG app is ready, starting tests...' && python -m pytest test/test_rag.py test/test_mistral.py -c test/pytest.ini -v --tb=short --junitxml=test/results.xml --html=test/report.html"]
+
+volumes:
+  chromadb_test_data:
+    driver: local
+
+networks:
+  rag-test-network:
+    driver: bridge

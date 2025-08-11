@@ -2,6 +2,12 @@
 __pycache__/
 *.py[cod]
 *$py.class
+data/*
+!data/.gitkeep
+*.html
+*.xml
+
+
 
 # C extensions
 *.so
