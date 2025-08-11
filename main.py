@@ -1,4 +1,4 @@
-# Configuration management - Environment variable support
+# Rate limiting - API throttling and request management
 from fastapi import FastAPI
 import uvicorn
 from controller import RAGHandler
