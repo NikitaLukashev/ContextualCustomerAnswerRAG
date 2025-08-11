@@ -1,3 +1,4 @@
+# API documentation - Complete endpoint documentation and examples
 # Contextual Customer Answer RAG
 
 A RAG (Retrieval-Augmented Generation) system for providing contextual customer answers using Airbnb listing data.
