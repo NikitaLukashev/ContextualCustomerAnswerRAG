@@ -56,6 +56,13 @@ This project implements a RAG system that can retrieve relevant information from
    - **ReDoc Documentation**: http://localhost:8000/redoc (Alternative view)
    - Health check: http://localhost:8000/health
 
+5 .**Updating Data:**
+
+1. Replace or update `airbnblisting.txt` with new content
+2. Call the `/reload` endpoint to reprocess the data
+3. The system will automatically update the vector database
+
+
 ## API Endpoints
 
 ### Core Endpoints
@@ -180,13 +187,6 @@ The API uses standard HTTP status codes and provides detailed error messages:
 - **500 Internal Server Error**: Server-side errors with descriptive messages
 - **422 Unprocessable Entity**: Request validation failures (FastAPI automatic)
 
-#### Rate Limiting
-
-Currently no rate limiting is implemented, but the system is designed to handle multiple concurrent requests efficiently.
-
-#### Authentication
-
-No authentication is required for the current endpoints. All endpoints are publicly accessible.
 
 #### OpenAPI Schema
 
@@ -194,11 +194,6 @@ The complete OpenAPI 3.0 specification is available at:
 - **JSON Schema**: http://localhost:8000/openapi.json
 - **YAML Schema**: http://localhost:8000/openapi.yaml
 
-This allows developers to:
-- Generate client SDKs in various programming languages
-- Import the API specification into tools like Postman or Insomnia
-- Validate API requests and responses
-- Generate comprehensive API documentation
 
 ### Search Examples
 
@@ -267,19 +262,6 @@ The system automatically processes the `airbnblisting.txt` file:
 3. **Embedding**: Generates embeddings using sentence transformers
 4. **Storage**: Stores in ChromaDB with metadata
 
-## Development
-
-### Adding New Data
-
-1. Replace or update `airbnblisting.txt` with new content
-2. Call the `/reload` endpoint to reprocess the data
-3. The system will automatically update the vector database
-
-### Customizing the RAG System
-
-- Modify `rag_system.py` for core RAG functionality
-- Update `main.py` for API endpoints
-- Adjust chunking parameters in `RAGHandler.chunk_text()`
 
 
 ## License
